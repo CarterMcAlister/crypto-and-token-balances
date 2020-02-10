@@ -1,0 +1,13 @@
+{
+  "name": "crypto-and-token-balances",
+  "version": "1.0.0",
+  "description": "Get Bitcoin, Ethereum, and Ethereum token balances",
+  "author": "CarterMcAlister",
+  "license": "MIT",
+  "repository": "CarterMcAlister/crypto-and-token-balances",
+  "main": "index.js",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "decimal.js": "^10.2.0"
+  }
+}
