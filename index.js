@@ -6,9 +6,10 @@ const {
 } = require('./utils')
 
 class CryptoBalance {
-  constructor(COINMARKETCAP_API_KEY, ETHPLORER_API_KEY) {
+  constructor(COINMARKETCAP_API_KEY, ETHPLORER_API_KEY, BLOCKONOMICS_API_KEY) {
     this.COINMARKETCAP_API_KEY = COINMARKETCAP_API_KEY
     this.ETHPLORER_API_KEY = ETHPLORER_API_KEY
+    this.BLOCKONOMICS_API_KEY = BLOCKONOMICS_API_KEY
     this.API = {
       BTC: this.getBitcoinBalance.bind(this),
       ETH: this.getEthereumAndTokenBalance.bind(this)
@@ -19,11 +20,15 @@ class CryptoBalance {
   async getBitcoinBalance(address) {
     const BTC_DECIMAL_MULTIPLIER = 0.00000001
     let usdValue
+    const config = {
+      headers: { Authorization: `Bearer ${this.BLOCKONOMICS_API_KEY}` }
+    }
     const addressInfo = await axios.post(
       'https://www.blockonomics.co/api/balance',
       {
         addr: address
-      }
+      },
+      config
     )
     const balance =
       addressInfo.data.response[0].confirmed * BTC_DECIMAL_MULTIPLIER
