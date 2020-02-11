@@ -33,7 +33,7 @@ class CryptoBalance {
       usdValue = balance * usdPrice
     }
 
-    return [{ ticker: 'BTC', balance, usdValue }]
+    return [{ ticker: 'BTC', balance, usdValue, usdPrice }]
   }
 
   async getEthereumAndTokenBalance(address) {
@@ -56,10 +56,14 @@ class CryptoBalance {
             parseFloat(price).toFixed(20),
             token.balance
           )
+          token.usdPrice = price
         }
       }
     })
-    return [{ ticker: 'ETH', balance, usdValue }, ...tokenData]
+    return [
+      { ticker: 'ETH', balance, usdValue, usdPrice: ethPrice },
+      ...tokenData
+    ]
   }
 
   async getBalances(walletData) {
@@ -85,7 +89,8 @@ const getTokenData = tokenData => {
   return {
     ticker: tokenData.tokenInfo.symbol,
     balance: formattedBalance,
-    usdValue
+    usdValue,
+    usdPrice: tokenData.tokenInfo.price.rate
   }
 }
 
