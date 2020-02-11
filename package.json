@@ -1,6 +1,6 @@
 {
   "name": "crypto-and-token-balances",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Get Bitcoin, Ethereum, and Ethereum token balances",
   "author": "CarterMcAlister",
   "license": "MIT",
