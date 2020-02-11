@@ -20,19 +20,22 @@ class CryptoBalance {
   async getBitcoinBalance(address) {
     const BTC_DECIMAL_MULTIPLIER = 0.00000001
     let usdValue
-    const config = {
-      headers: { Authorization: `Bearer ${this.BLOCKONOMICS_API_KEY}` }
+    const headerConfig = {}
+    if (this.BLOCKONOMICS_API_KEY) {
+      headerConfig.headers = {
+        Authorization: `Bearer ${this.BLOCKONOMICS_API_KEY}`
+      }
     }
     const addressInfo = await axios.post(
       'https://www.blockonomics.co/api/balance',
       {
         addr: address
       },
-      config
+      headerConfig
     )
     const balance =
       addressInfo.data.response[0].confirmed * BTC_DECIMAL_MULTIPLIER
-    const usdPrice = await getCryptoPriceData('BTC')
+    const usdPrice = await this.getCryptoPriceData('BTC')
 
     if (usdPrice) {
       usdValue = balance * usdPrice
@@ -55,7 +58,7 @@ class CryptoBalance {
 
     await asyncForEach(tokenData, async token => {
       if (!token.usdValue) {
-        const price = await getCryptoPriceData(token.ticker)
+        const price = await this.getCryptoPriceData(token.ticker)
         if (price) {
           token.usdValue = getTokenValue(
             parseFloat(price).toFixed(20),
@@ -82,6 +85,18 @@ class CryptoBalance {
     })
     return balanceInfo
   }
+
+  async getCryptoPriceData(ticker) {
+    try {
+      const pricingData = await axios.get(
+        `https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${ticker}&CMC_PRO_API_KEY=${this.COINMARKETCAP_API_KEY}`
+      )
+
+      return pricingData.data.data[ticker].quote.USD.price
+    } catch {
+      return undefined
+    }
+  }
 }
 
 const getTokenData = tokenData => {
@@ -96,17 +111,6 @@ const getTokenData = tokenData => {
     balance: formattedBalance,
     usdValue,
     usdPrice: tokenData.tokenInfo.price.rate
-  }
-}
-
-async function getCryptoPriceData(ticker) {
-  try {
-    const pricingData = await axios.get(
-      `https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${ticker}&CMC_PRO_API_KEY=${this.COINMARKETCAP_API_KEY}`
-    )
-    return pricingData.data.data[ticker].quote.USD.price
-  } catch (e) {
-    return undefined
   }
 }
 
